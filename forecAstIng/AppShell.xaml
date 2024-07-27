@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="forecAstIng.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:forecAstIng"
+    xmlns:view="clr-namespace:forecAstIng.View"
+    FlyoutBackgroundColor="{AppThemeBinding Light=White, Dark={StaticResource Gray200}}">
+
+    <ShellContent
+        Title="forecAstIng"
+        ContentTemplate="{DataTemplate view:MainPage}" 
+        FlyoutItemIsVisible="False"/>
+
+    <ShellContent
+        Title="Add More..."
+        ContentTemplate="{DataTemplate view:MainPage}"
+        Icon="lightning.png" />
+
+    <ShellContent
+        Title="History"
+        Icon="lightning.png"
+        ContentTemplate="{DataTemplate view:MainPage}" />
+
+    <ShellContent
+        Title="Sentiment"
+        Icon="lightning.png"
+        ContentTemplate="{DataTemplate view:MainPage}" />
+
+    <MenuItem
+        Text="Settings"
+        IconImageSource="lightning.png" />
+
+</Shell>

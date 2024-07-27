@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:model="clr-namespace:forecAstIng.Model"
+             xmlns:viewmodel="clr-namespace:forecAstIng.ViewModel"
+             x:DataType="viewmodel:ForecastsViewModel"
+             Title="{Binding Title}"
+             x:Class="forecAstIng.View.MainPage"
+             BackgroundColor="#402E7A">
+
+
+    <ScrollView>
+        <VerticalStackLayout>
+            <HorizontalStackLayout
+                HorizontalOptions="Center"
+                Spacing="10"
+                Margin="5">
+                <Button Text="Today"></Button>
+                <Button Text="Tommorow"></Button>
+                <Button Text="3-day"></Button>
+                <Button Text="7-day"></Button>
+            </HorizontalStackLayout>
+
+            <CollectionView 
+                ItemsSource="{Binding forecasts}"
+                Margin="20">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="model:TimeSeriesData">
+                        <Frame
+                            Padding="20"
+                            Margin="20"
+                            CornerRadius="10"
+                            BorderColor="White"
+                            HorizontalOptions="FillAndExpand"
+                            HeightRequest="150"
+                            WidthRequest="350"
+                            BackgroundColor="#4C3BCF">
+                            <Grid>
+                                <Image
+                                    Source="{Binding CurrentBehaviour, StringFormat='{0}.png'}"
+                                    HorizontalOptions="Start"/>
+                                <VerticalStackLayout 
+                                    VerticalOptions="Start"
+                                    HorizontalOptions="Center"
+                                    Grid.Column="1"
+                                    Grid.Row="0">
+                                    <Label 
+                                        FontSize="20"
+                                        Text="{Binding Name}"/>
+                                    <Label FontSize="18">
+                                        <Label.Text>
+                                            <MultiBinding StringFormat="{}{0}{1:F2}" x:DataType="model:TimeSeriesData">
+                                                <Binding Path="MeasurementUnit" />
+                                                <Binding Path="CurrentValue" />
+                                                <!--possible problems-->
+                                            </MultiBinding>
+                                        </Label.Text>
+                                    </Label>
+                                </VerticalStackLayout>
+                                <VerticalStackLayout
+                                    HorizontalOptions="End">
+                                    <Label FontSize="14">
+                                        <Label.Text>
+                                            <MultiBinding StringFormat="Max: {0}{1:F2}" x:DataType="model:TimeSeriesData">
+                                                <Binding Path="MeasurementUnit" />
+                                                <Binding Path="HistoryHigh" />
+                                                <!--possible problems-->
+                                            </MultiBinding>
+                                        </Label.Text>
+                                    </Label>
+                                    <Label FontSize="14">
+                                        <Label.Text>
+                                            <MultiBinding StringFormat="Min: {0}{1:F2}" x:DataType="model:TimeSeriesData">
+                                                <Binding Path="MeasurementUnit" />
+                                                <Binding Path="HistoryLow" />
+                                                <!--possible problems-->
+                                            </MultiBinding>
+                                        </Label.Text>
+                                    </Label>
+                                </VerticalStackLayout>
+                                <Button Text="More"
+                                
+                                        HorizontalOptions="Center"
+                                        VerticalOptions="End"/>
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

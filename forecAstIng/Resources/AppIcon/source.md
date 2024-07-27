@@ -1,0 +1,1 @@
+App icon by afif fudin on [Flaticon](https://www.flaticon.com/free-icons/finance)
