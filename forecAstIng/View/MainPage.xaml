@@ -1,13 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+<ContentPage x:Class="forecAstIng.View.MainPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:model="clr-namespace:forecAstIng.Model"
              xmlns:viewmodel="clr-namespace:forecAstIng.ViewModel"
              x:DataType="viewmodel:ForecastsViewModel"
              Title="{Binding Title}"
-             x:Class="forecAstIng.View.MainPage"
              BackgroundColor="#402E7A">
-
 
     <ScrollView>
         <VerticalStackLayout>
@@ -48,40 +47,36 @@
                                         FontSize="20"
                                         Text="{Binding Name}"/>
                                     <Label FontSize="18">
-                                        <Label.Text>
-                                            <MultiBinding StringFormat="{}{0}{1:F2}" x:DataType="model:TimeSeriesData">
-                                                <Binding Path="MeasurementUnit" />
-                                                <Binding Path="CurrentValue" />
-                                                <!--possible problems-->
-                                            </MultiBinding>
-                                        </Label.Text>
+                                    <Label.Text>
+                                        <MultiBinding StringFormat="{}{0}{1:F2}" x:DataType="model:TimeSeriesData">
+                                            <Binding Path="MeasurementUnit" />
+                                            <Binding Path="CurrentValue" />
+                                        </MultiBinding>
+                                    </Label.Text>
                                     </Label>
                                 </VerticalStackLayout>
                                 <VerticalStackLayout
                                     HorizontalOptions="End">
                                     <Label FontSize="14">
-                                        <Label.Text>
-                                            <MultiBinding StringFormat="Max: {0}{1:F2}" x:DataType="model:TimeSeriesData">
-                                                <Binding Path="MeasurementUnit" />
-                                                <Binding Path="HistoryHigh" />
-                                                <!--possible problems-->
-                                            </MultiBinding>
-                                        </Label.Text>
+                                    <Label.Text>
+                                        <MultiBinding StringFormat="Max: {0}{1:F2}" x:DataType="model:TimeSeriesData">
+                                            <Binding Path="MeasurementUnit" />
+                                            <Binding Path="HistoryHigh" />
+                                        </MultiBinding>
+                                    </Label.Text>
                                     </Label>
                                     <Label FontSize="14">
                                         <Label.Text>
                                             <MultiBinding StringFormat="Min: {0}{1:F2}" x:DataType="model:TimeSeriesData">
                                                 <Binding Path="MeasurementUnit" />
                                                 <Binding Path="HistoryLow" />
-                                                <!--possible problems-->
                                             </MultiBinding>
                                         </Label.Text>
                                     </Label>
                                 </VerticalStackLayout>
-                                <Button Text="More"
-                                
-                                        HorizontalOptions="Center"
-                                        VerticalOptions="End"/>
+                                <Button Text="More..." CommandParameter="{Binding .}" Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ForecastsViewModel}}, Path=GoToMorePageCommand}"
+                                    HorizontalOptions="Center"
+                                    VerticalOptions="End"/>
                             </Grid>
                         </Frame>
                     </DataTemplate>
@@ -89,4 +84,5 @@
             </CollectionView>
         </VerticalStackLayout>
     </ScrollView>
+
 </ContentPage>

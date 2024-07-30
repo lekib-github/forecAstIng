@@ -1,8 +1,8 @@
 ﻿namespace forecAstIng.View
 {
-    public partial class MainPage : ContentPage
+    public partial class MorePage : ContentPage
     {
-        public MainPage(ForecastsViewModel vm)
+        public MorePage(MorePageViewModel vm)
         {
             InitializeComponent();
             BindingContext = vm;
