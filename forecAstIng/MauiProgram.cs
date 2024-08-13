@@ -1,5 +1,7 @@
 ﻿using forecAstIng.View;
 using Microsoft.Extensions.Logging;
+using CommunityToolkit.Maui;
+using forecAstIng.Services;
 
 namespace forecAstIng
 {
@@ -10,11 +12,14 @@ namespace forecAstIng
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
+                .UseMauiCommunityToolkit()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
+
+            builder.Services.AddSingleton<DataService>();
 
             builder.Services.AddSingleton<ForecastsViewModel>();
             builder.Services.AddSingleton<MainPage>();

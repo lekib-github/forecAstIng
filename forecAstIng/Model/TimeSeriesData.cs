@@ -21,13 +21,13 @@
         // Detailed data type attributes, pressure wind... for weather, volatility, liquidty... for stocks
     }
 
-    class WeatherData : TimeSeriesData
+    public class WeatherData : TimeSeriesData
     {
-
+        
     }
 
-    class StockData : TimeSeriesData
+    public class StockData : TimeSeriesData
     {
-
+        
     }
 }

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<toolkit:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+               xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+               xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+               xmlns:viewmodel="clr-namespace:forecAstIng.ViewModel"
+               x:DataType="viewmodel:ForecastsViewModel"
+               x:Class="forecAstIng.View.SearchPrompt">
+    <Frame HeightRequest="150"
+           WidthRequest="300"
+           BackgroundColor="#402E7A"
+           Padding="0"
+           CornerRadius="0">
+        <VerticalStackLayout>
+            <Entry x:Name="entry"
+                   Placeholder="Enter location..."
+                   Margin="20"/>
+            <Button Text="Add" HorizontalOptions="Center"
+                    CommandParameter="{Binding Source={x:Reference entry}, Path=Text}"
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ForecastsViewModel}}, Path=AddRequestedCommand}"/>
+        </VerticalStackLayout>
+    </Frame>
+</toolkit:Popup>

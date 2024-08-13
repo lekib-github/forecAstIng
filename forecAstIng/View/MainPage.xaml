@@ -21,8 +21,9 @@
             </HorizontalStackLayout>
 
             <CollectionView 
-                ItemsSource="{Binding forecasts}"
+                ItemsSource="{Binding Forecasts}"
                 Margin="20">
+                
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="model:TimeSeriesData">
                         <Frame
@@ -34,6 +35,9 @@
                             HeightRequest="150"
                             WidthRequest="350"
                             BackgroundColor="#4C3BCF">
+                            <Frame.GestureRecognizers>
+                                <SwipeGestureRecognizer Direction="Left" CommandParameter="{Binding .}" Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ForecastsViewModel}}, Path=RemoveSwipedCommand}"/>
+                            </Frame.GestureRecognizers>
                             <Grid>
                                 <Image
                                     Source="{Binding CurrentBehaviour, StringFormat='{0}.png'}"
@@ -47,23 +51,23 @@
                                         FontSize="20"
                                         Text="{Binding Name}"/>
                                     <Label FontSize="18">
-                                    <Label.Text>
-                                        <MultiBinding StringFormat="{}{0}{1:F2}" x:DataType="model:TimeSeriesData">
-                                            <Binding Path="MeasurementUnit" />
-                                            <Binding Path="CurrentValue" />
-                                        </MultiBinding>
-                                    </Label.Text>
+                                        <Label.Text>
+                                            <MultiBinding StringFormat="{}{0}{1:F2}" x:DataType="model:TimeSeriesData">
+                                                <Binding Path="MeasurementUnit" />
+                                                <Binding Path="CurrentValue" />
+                                            </MultiBinding>
+                                        </Label.Text>
                                     </Label>
                                 </VerticalStackLayout>
                                 <VerticalStackLayout
                                     HorizontalOptions="End">
                                     <Label FontSize="14">
-                                    <Label.Text>
-                                        <MultiBinding StringFormat="Max: {0}{1:F2}" x:DataType="model:TimeSeriesData">
-                                            <Binding Path="MeasurementUnit" />
-                                            <Binding Path="HistoryHigh" />
-                                        </MultiBinding>
-                                    </Label.Text>
+                                        <Label.Text>
+                                            <MultiBinding StringFormat="Max: {0}{1:F2}" x:DataType="model:TimeSeriesData">
+                                                <Binding Path="MeasurementUnit" />
+                                                <Binding Path="HistoryHigh" />
+                                            </MultiBinding>
+                                        </Label.Text>
                                     </Label>
                                     <Label FontSize="14">
                                         <Label.Text>
@@ -82,7 +86,13 @@
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
+            <ImageButton 
+                HorizontalOptions="Center"  
+                HeightRequest="100" 
+                WidthRequest="100" 
+                Source="add.png"
+                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ForecastsViewModel}}, Path=OpenSearchPopupCommand}"/>
+            <Label HorizontalOptions="Center" Text="Add more..."/>
         </VerticalStackLayout>
     </ScrollView>
-
 </ContentPage>

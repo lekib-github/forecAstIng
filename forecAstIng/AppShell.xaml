@@ -13,11 +13,6 @@
         FlyoutItemIsVisible="False"/>
 
     <ShellContent
-        Title="Add More..."
-        ContentTemplate="{DataTemplate view:MainPage}"
-        Icon="lightning.png" />
-
-    <ShellContent
         Title="History"
         Icon="lightning.png"
         ContentTemplate="{DataTemplate view:MainPage}" />
