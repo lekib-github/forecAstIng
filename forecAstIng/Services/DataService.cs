@@ -17,66 +17,90 @@ namespace forecAstIng.Services
             client = new HttpClient();
         }
 
-        internal class Geocode
+        private async Task<Geoloc> GeolocateCoords(double lat, double lon)
         {
-            public int place_id { get; set; }
-            public string licence { get; set; }
-            public string osm_type { get; set; }
-            public object osm_id { get; set; }
-            public List<string> boundingbox { get; set; }
-            public string lat { get; set; }
-            public string lon { get; set; }
-            public string display_name { get; set; }
-            public string @class { get; set; }
-            public string type { get; set; }
-            public double importance { get; set; }
-        }
+            var response = await client.GetAsync($"https://geocode.maps.co/reverse?lat={lat}&lon={lon}&api_key={ServiceSecrets.GEOCODEMAPSCO_KEY}");
 
-
-        // No granular exception handling; automatic last location forecast adding is a QOL feauture, and the user can attempt
-        // to add their location manually if it fails, where they will get more data.
-        public async Task<TimeSeriesData> GetLastLocation()
-        {
-            Location location = await Geolocation.Default.GetLastKnownLocationAsync();
-
-            if (location != null)
+            try
             {
-                var response = await client.GetAsync($"https://geocode.maps.co/reverse?lat={location.Latitude}&lon={location.Longitude}&api_key={ServiceSecrets.GEOCODEMAPSCO_KEY}");
-
                 if (response.IsSuccessStatusCode)
                 {
-                    var geocode = await response.Content.ReadFromJsonAsync<List<Geocode>>();
-                    return new WeatherData { Name = geocode[0].display_name };
-                }
-            }  
+                    Geoloc geoloc;
+                    geoloc = await response.Content.ReadFromJsonAsync<Geoloc>();
 
-            throw new ServiceException("No location data found. Please check your location settings and try again.");
+                    return geoloc;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new ServiceException("Unable to geolocate.");
+            }
+
+            throw new ServiceException($"Bad Server response: {response.StatusCode}. Please check your internet connection and try again.");
         }
 
-        public async Task<TimeSeriesData> GetData(string requestedName)
+        private async Task<List<Geocode>> GeocodeAddress(string address)
         {
-            List<Geocode> geocodes;
+            var response = await client.GetAsync($"https://geocode.maps.co/search?q={address}&api_key={ServiceSecrets.GEOCODEMAPSCO_KEY}");
 
-            var response = await client.GetAsync($"https://geocode.maps.co/search?q={requestedName}&api_key={ServiceSecrets.GEOCODEMAPSCO_KEY}");
             if (response.IsSuccessStatusCode)
             {
+                List<Geocode> geocodes;
                 geocodes = await response.Content.ReadFromJsonAsync<List<Geocode>>();
+
                 if (geocodes.Count == 0)
                 {
                     throw new ServiceException("No match found. Please check the entered location and try again.");
                 }
 
-                // Ordering by importance, intuitive; then by length of name, with assumption that shorter names are less specific,
-                // and therefore more likely to be the desired location (we take only one off the top for each request)...
-                // Eager evaluation shouldn't be a problem, not many geocodes will be returned, in the order of 10s..
-                geocodes = geocodes.OrderByDescending(code => code.importance).ThenBy(code => code.display_name.Length).ToList();
-
-                // TODO: establish what data is important for the app to display, and build weather api requests based on that.
-                // Then, build a WeatherData object with the data from the response.
-                return new WeatherData { Name = geocodes[0].display_name };
+                return geocodes;
             }
 
             throw new ServiceException($"Bad Server response: {response.StatusCode}. Please check your internet connection and try again.");
+        }
+
+        private async Task<Weather> WeatherFromCoords(double lat, double lon)
+        {
+            var response = await client.GetAsync($"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation_probability,precipitation,rain,showers,snowfall,weather_code,surface_pressure,visibility,wind_speed_10m,wind_direction_10m,uv_index&daily=temperature_2m_max,temperature_2m_min,daylight_duration&timezone=GMT&past_days=7");
+
+            if (response.IsSuccessStatusCode)
+            {
+                Weather weather;
+                weather = await response.Content.ReadFromJsonAsync<Weather>();
+
+                return weather;
+            }
+
+            throw new ServiceException($"Bad Server response: {response.StatusCode}. Please check your internet connection and try again.");
+        }
+
+        public async Task<(Geoloc, Weather)> GetLastLocationForecast()
+        {
+            Location location = await Geolocation.Default.GetLastKnownLocationAsync();
+
+            if (location != null)
+            {
+                var geoloc = await GeolocateCoords(location.Latitude, location.Longitude);
+                var weather = await WeatherFromCoords(location.Latitude, location.Longitude);
+
+                return (geoloc, weather);
+            }
+
+            throw new ServiceException("No location data found. Please check your location settings and try again.");
+        }
+
+        public async Task<(Geoloc, Weather)> GetData(string requestedName)
+        {
+            var geocodes = await GeocodeAddress(requestedName);
+
+            // Geocode -> Geoloc for more granular data on the location; Geocodes return specific addresses as display_name,
+            // while Geolocs return more detailed information on the location, such as the country, state, city, and more, which
+            // we can use to manipulate our TimeSeriesData objects better.
+
+            var geoloc = await GeolocateCoords(double.Parse(geocodes[0].lat), double.Parse(geocodes[0].lon));
+            var weather = await WeatherFromCoords(double.Parse(geoloc.lat), double.Parse(geoloc.lon));
+
+            return (geoloc, weather);
         }
     }
 }

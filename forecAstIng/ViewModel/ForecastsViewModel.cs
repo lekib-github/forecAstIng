@@ -15,16 +15,28 @@ namespace forecAstIng.ViewModel
             Title = "forecAstIng";
             dataService = service;
 
-            // TODO: Fix data service method which parses json like a geocode response, need new class for reverse geocode
-            //LoadLastLocationForecast();
+            LoadLastLocationForecast();
         }
 
+        // Will need to change according to WeatherData etc. Even as it stands there is a lot of hardcoding, and it is not complete
+        private WeatherData ConstructWeatherData(Geoloc geoloc, Weather weather)
+        {
+            return new WeatherData { Name = $"{geoloc.address.city}, {geoloc.address.country_code}", 
+                                     MeasurementUnit = weather.hourly_units.temperature_2m,
+                                     HistoryHigh = weather.daily.temperature_2m_max.Max(),
+                                     HistoryLow = weather.daily.temperature_2m_min.Min(),
+                                     CurrentValue = weather.hourly.temperature_2m[24*7 + 12]};
+        }
+
+        // No granular exception handling; automatic last location forecast adding is a QOL feauture, and the user can attempt
+        // to add their location manually if it fails, where they will get more data.
         async Task LoadLastLocationForecast()
         {
             try
             {
-                var forecast = await dataService.GetLastLocation();
-                Forecasts.Add(forecast);
+                var (geoloc, weather) = await dataService.GetLastLocationForecast();
+
+                Forecasts.Add(ConstructWeatherData(geoloc, weather));
             }
             catch (Exception ex)
             {
@@ -66,9 +78,9 @@ namespace forecAstIng.ViewModel
 
                 if (accessType == NetworkAccess.Internet)
                 {
-                    var dataPoint = await dataService.GetData(requestedName);
+                    var (geoloc, weather) = await dataService.GetData(requestedName);
 
-                    Forecasts.Add(dataPoint);
+                    Forecasts.Add(ConstructWeatherData(geoloc, weather));
                 }
 
                 else
