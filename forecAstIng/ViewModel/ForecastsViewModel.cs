@@ -18,18 +18,14 @@ namespace forecAstIng.ViewModel
             LoadLastLocationForecast();
         }
 
-        // Will need to change according to WeatherData etc. Even as it stands there is a lot of hardcoding, and it is not complete
-        private WeatherData ConstructWeatherData(Geoloc geoloc, Weather weather)
+        private WeatherData ConstructWeatherData(Geoloc geoloc, WeatherData weather)
         {
-            return new WeatherData { Name = $"{geoloc.address.city}, {geoloc.address.country_code}", 
-                                     MeasurementUnit = weather.hourly_units.temperature_2m,
-                                     HistoryHigh = weather.daily.temperature_2m_max.Max(),
-                                     HistoryLow = weather.daily.temperature_2m_min.Min(),
-                                     CurrentValue = weather.hourly.temperature_2m[24*7 + 12]};
+            weather.name = $"{geoloc.address.city}, {geoloc.address.country_code.ToUpperInvariant()}";
+            return weather;
         }
 
-        // No granular exception handling; automatic last location forecast adding is a QOL feauture, and the user can attempt
-        // to add their location manually if it fails, where they will get more data.
+        // No granular exception handling; automatic last location forecast adding is a QOL feauture,
+        // and the user can attempt to add their location manually if it fails, where they will get more data.
         async Task LoadLastLocationForecast()
         {
             try
@@ -50,9 +46,11 @@ namespace forecAstIng.ViewModel
             if (forecast is null)
                 return;
 
+            var toPass = new List<TimeSeriesData> { forecast };
+
             await Shell.Current.GoToAsync(nameof(MorePage), true, new Dictionary<string, object>
                 {
-                    {"Forecast", forecast}
+                    {"Forecast", toPass}
                 });
         }
 

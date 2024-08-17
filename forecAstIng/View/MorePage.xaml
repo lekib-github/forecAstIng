@@ -6,22 +6,25 @@
              xmlns:viewmodel="clr-namespace:forecAstIng.ViewModel"
              xmlns:local="clr-namespace:forecAstIng.View"
              x:DataType="viewmodel:MorePageViewModel"
-             Title="{Binding Forecast.Name}"
+             Title="{Binding Forecast[0].name}"
              BackgroundColor="#402E7A">
+    
+    <CollectionView 
+        ItemsSource="{Binding Forecast}"
+        Margin="20"
+        ItemTemplate="{StaticResource TimeSeriesDataTemplateSelector}"/>
+    
     <ContentPage.Resources>
         <DataTemplate x:Key="Weather" x:DataType="model:WeatherData">
-            <Label Text="{Binding Name}" />
+            <Label Text="{Binding daily.temperature_2m_max[6]}" />
         </DataTemplate>
 
         <DataTemplate x:Key="Stock" x:DataType="model:StockData">
-            <Label Text="{Binding Name}" />
+            <Label Text="{Binding name}" />
         </DataTemplate>
 
         <local:TimeSeriesDataTemplateSelector x:Key="TimeSeriesDataTemplateSelector"
                                              WeatherDataTemplate="{StaticResource Weather}"
                                              StockDataTemplate="{StaticResource Stock}" />
     </ContentPage.Resources>
-
-    <!--<ContentView Content="{Binding Forecast}" ControlTemplate={Binding }>
-    </ContentView>-->
 </ContentPage>

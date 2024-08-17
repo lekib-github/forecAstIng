@@ -2,6 +2,7 @@
 <ContentPage x:Class="forecAstIng.View.MainPage"
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:forecAstIng.View"
              xmlns:model="clr-namespace:forecAstIng.Model"
              xmlns:viewmodel="clr-namespace:forecAstIng.ViewModel"
              x:DataType="viewmodel:ForecastsViewModel"
@@ -23,25 +24,30 @@
             <CollectionView 
                 ItemsSource="{Binding Forecasts}"
                 Margin="20">
-                
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="model:TimeSeriesData">
                         <Frame
-                            Padding="20"
+                            Padding="12"
                             Margin="20"
                             CornerRadius="10"
                             BorderColor="White"
-                            HorizontalOptions="FillAndExpand"
-                            HeightRequest="150"
-                            WidthRequest="350"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            HeightRequest="160"
+                            WidthRequest="360"
                             BackgroundColor="#4C3BCF">
                             <Frame.GestureRecognizers>
-                                <SwipeGestureRecognizer Direction="Left" CommandParameter="{Binding .}" Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ForecastsViewModel}}, Path=RemoveSwipedCommand}"/>
+                                <SwipeGestureRecognizer 
+                                    Direction="Left"
+                                    CommandParameter="{Binding .}"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ForecastsViewModel}}, Path=RemoveSwipedCommand}"/>
                             </Frame.GestureRecognizers>
                             <Grid>
                                 <Image
-                                    Source="{Binding CurrentBehaviour, StringFormat='{0}.png'}"
-                                    HorizontalOptions="Start"/>
+                                    Source="{Binding today_behaviour, StringFormat='{0}.png'}"
+                                    HorizontalOptions="Start"
+                                    MaximumWidthRequest="80"
+                                    MaximumHeightRequest="80"/>
                                 <VerticalStackLayout 
                                     VerticalOptions="Start"
                                     HorizontalOptions="Center"
@@ -49,38 +55,44 @@
                                     Grid.Row="0">
                                     <Label 
                                         FontSize="20"
-                                        Text="{Binding Name}"/>
+                                        Text="{Binding name}"/>
                                     <Label FontSize="18">
                                         <Label.Text>
                                             <MultiBinding StringFormat="{}{0}{1:F2}" x:DataType="model:TimeSeriesData">
-                                                <Binding Path="MeasurementUnit" />
-                                                <Binding Path="CurrentValue" />
+                                                <Binding Path="measurement_unit" />
+                                                <Binding Path="hour_value" />
                                             </MultiBinding>
                                         </Label.Text>
                                     </Label>
                                 </VerticalStackLayout>
                                 <VerticalStackLayout
-                                    HorizontalOptions="End">
+                                    HorizontalOptions="End"
+                                    VerticalOptions="Center"
+                                    Margin="0,0,0,30">
                                     <Label FontSize="14">
                                         <Label.Text>
                                             <MultiBinding StringFormat="Max: {0}{1:F2}" x:DataType="model:TimeSeriesData">
-                                                <Binding Path="MeasurementUnit" />
-                                                <Binding Path="HistoryHigh" />
+                                                <Binding Path="measurement_unit" />
+                                                <Binding Path="today_high" />
                                             </MultiBinding>
                                         </Label.Text>
                                     </Label>
                                     <Label FontSize="14">
                                         <Label.Text>
                                             <MultiBinding StringFormat="Min: {0}{1:F2}" x:DataType="model:TimeSeriesData">
-                                                <Binding Path="MeasurementUnit" />
-                                                <Binding Path="HistoryLow" />
+                                                <Binding Path="measurement_unit" />
+                                                <Binding Path="today_low" />
                                             </MultiBinding>
                                         </Label.Text>
                                     </Label>
                                 </VerticalStackLayout>
-                                <Button Text="More..." CommandParameter="{Binding .}" Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ForecastsViewModel}}, Path=GoToMorePageCommand}"
+                                <Button
+                                    Text="More..."
+                                    CommandParameter="{Binding .}"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ForecastsViewModel}}, Path=GoToMorePageCommand}"
                                     HorizontalOptions="Center"
-                                    VerticalOptions="End"/>
+                                    VerticalOptions="End"
+                                    Margin="0,70,0,0"/>
                             </Grid>
                         </Frame>
                     </DataTemplate>

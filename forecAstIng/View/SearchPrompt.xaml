@@ -5,18 +5,23 @@
                xmlns:viewmodel="clr-namespace:forecAstIng.ViewModel"
                x:DataType="viewmodel:ForecastsViewModel"
                x:Class="forecAstIng.View.SearchPrompt">
-    <Frame HeightRequest="150"
-           WidthRequest="300"
-           BackgroundColor="#402E7A"
-           Padding="0"
-           CornerRadius="0">
+	
+    <Frame
+		HeightRequest="150"
+        WidthRequest="300"
+        BackgroundColor="#402E7A"
+        Padding="0"
+        CornerRadius="0">
         <VerticalStackLayout>
-            <Entry x:Name="entry"
-                   Placeholder="Enter location..."
-                   Margin="20"/>
-            <Button Text="Add" HorizontalOptions="Center"
-                    CommandParameter="{Binding Source={x:Reference entry}, Path=Text}"
-                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ForecastsViewModel}}, Path=AddRequestedCommand}"/>
+            <Entry
+				x:Name="entry"
+                Placeholder="Enter location..."
+                Margin="20"/>
+            <Button
+			    Text="Add"
+				HorizontalOptions="Center"
+                CommandParameter="{Binding Source={x:Reference entry}, Path=Text}"
+                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ForecastsViewModel}}, Path=AddRequestedCommand}"/>
         </VerticalStackLayout>
     </Frame>
 </toolkit:Popup>

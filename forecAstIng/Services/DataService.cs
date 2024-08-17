@@ -59,14 +59,14 @@ namespace forecAstIng.Services
             throw new ServiceException($"Bad Server response: {response.StatusCode}. Please check your internet connection and try again.");
         }
 
-        private async Task<Weather> WeatherFromCoords(double lat, double lon)
+        private async Task<WeatherData> WeatherFromCoords(double lat, double lon)
         {
-            var response = await client.GetAsync($"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation_probability,precipitation,rain,showers,snowfall,weather_code,surface_pressure,visibility,wind_speed_10m,wind_direction_10m,uv_index&daily=temperature_2m_max,temperature_2m_min,daylight_duration&timezone=GMT&past_days=7");
+            var response = await client.GetAsync($"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation_probability,precipitation,rain,showers,snowfall,weather_code,surface_pressure,visibility,wind_speed_10m,wind_direction_10m,uv_index&daily=weather_code,temperature_2m_max,temperature_2m_min,daylight_duration&timezone=auto&past_days=7");
 
             if (response.IsSuccessStatusCode)
             {
-                Weather weather;
-                weather = await response.Content.ReadFromJsonAsync<Weather>();
+                WeatherData weather;
+                weather = await response.Content.ReadFromJsonAsync<WeatherData>();
 
                 return weather;
             }
@@ -74,7 +74,7 @@ namespace forecAstIng.Services
             throw new ServiceException($"Bad Server response: {response.StatusCode}. Please check your internet connection and try again.");
         }
 
-        public async Task<(Geoloc, Weather)> GetLastLocationForecast()
+        public async Task<(Geoloc, WeatherData)> GetLastLocationForecast()
         {
             Location location = await Geolocation.Default.GetLastKnownLocationAsync();
 
@@ -89,7 +89,7 @@ namespace forecAstIng.Services
             throw new ServiceException("No location data found. Please check your location settings and try again.");
         }
 
-        public async Task<(Geoloc, Weather)> GetData(string requestedName)
+        public async Task<(Geoloc, WeatherData)> GetData(string requestedName)
         {
             var geocodes = await GeocodeAddress(requestedName);
 
