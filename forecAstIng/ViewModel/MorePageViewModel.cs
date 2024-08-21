@@ -9,8 +9,8 @@
 
         // This list holds only one value, namely the forecast for which we want details.
         // This is a .NET MAUI hack to both be able to assign Weather/Stock into TimeSeriesData
-        // (I had trouble with it before..) and be able to use the nice template selector instead
-        // of making 2 pages for Weather/Stock
+        // (I had trouble with it when NOT in a list..) and be able to use the nice template 
+        // selector instead of making 2 pages for Weather/Stock
         [ObservableProperty]
         List<TimeSeriesData> forecast;
     }

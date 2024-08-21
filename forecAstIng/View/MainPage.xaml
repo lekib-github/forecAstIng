@@ -15,10 +15,9 @@
                 HorizontalOptions="Center"
                 Spacing="10"
                 Margin="5">
+                <Button Text="7-day History"></Button>
                 <Button Text="Today"></Button>
-                <Button Text="Tommorow"></Button>
-                <Button Text="3-day"></Button>
-                <Button Text="7-day"></Button>
+                <Button Text="7-day Forecast"></Button>
             </HorizontalStackLayout>
 
             <CollectionView 

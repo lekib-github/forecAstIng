@@ -12,18 +12,4 @@
         ContentTemplate="{DataTemplate view:MainPage}" 
         FlyoutItemIsVisible="False"/>
 
-    <ShellContent
-        Title="History"
-        Icon="lightning.png"
-        ContentTemplate="{DataTemplate view:MainPage}" />
-
-    <ShellContent
-        Title="Sentiment"
-        Icon="lightning.png"
-        ContentTemplate="{DataTemplate view:MainPage}" />
-
-    <MenuItem
-        Text="Settings"
-        IconImageSource="lightning.png" />
-
 </Shell>

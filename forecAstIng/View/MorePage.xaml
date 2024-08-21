@@ -5,6 +5,7 @@
              xmlns:model="clr-namespace:forecAstIng.Model"
              xmlns:viewmodel="clr-namespace:forecAstIng.ViewModel"
              xmlns:local="clr-namespace:forecAstIng.View"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:DataType="viewmodel:MorePageViewModel"
              Title="{Binding Forecast[0].name}"
              BackgroundColor="#402E7A">
@@ -16,7 +17,153 @@
     
     <ContentPage.Resources>
         <DataTemplate x:Key="Weather" x:DataType="model:WeatherData">
-            <Label Text="{Binding daily.temperature_2m_max[6]}" />
+            <VerticalStackLayout>
+                <Border StrokeShape="RoundRectangle 80"
+                    Stroke="Black"
+                    StrokeThickness="6"
+                    HeightRequest="172"
+                    WidthRequest="172"
+                    Margin="0,8,0,20"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"
+                    Background="AliceBlue">
+                    <Image 
+                        Source="{Binding today_behaviour, StringFormat='{0}.png'}"
+                        HorizontalOptions="Center"
+                        MaximumHeightRequest="80"
+                        MaximumWidthRequest="80"
+                        Aspect="AspectFill"/>
+                </Border>
+                <Label 
+                    HorizontalOptions="Center"
+                    FontSize="32">
+                    <Label.Text>
+                        <MultiBinding StringFormat="{}{0:F2}{1}" x:DataType="model:WeatherData">
+                            <Binding Path="hour_value"/>
+                            <Binding Path="hourly_units.temperature_2m"/>
+                        </MultiBinding>
+                    </Label.Text>
+                </Label>
+                <Label 
+                    Text="{Binding today_behaviour, Converter={StaticResource TextCaseConverter}}"
+                    HorizontalOptions="Center"
+                    FontSize="24"
+                    Margin="0,0,0,30"/>
+                <Label
+                    FontSize="20"
+                    Text="{Binding latitude, StringFormat='Latitude: {0:F2}'}"/>                
+                <Label
+                    FontSize="20"
+                    Text="{Binding longitude, StringFormat='Longitutde: {0:F2}'}"/>
+                <Label
+                    FontSize="20">
+                    <Label.Text>
+                        <MultiBinding StringFormat="Daylight Duration: {0:F1}{1}" x:DataType="model:WeatherData">
+                            <Binding Path="daily.daylight_duration_current" />
+                            <Binding Path="daily_units.daylight_duration"/>
+                        </MultiBinding>
+                    </Label.Text>
+                </Label>
+                <Label
+                    FontSize="20"
+                    Margin="0,0,0,20"
+                    Text="{Binding timezone_abbreviation, StringFormat='Timezone: {0}'}"/>
+                <Label
+                    FontSize="20">
+                    <Label.Text>
+                        <MultiBinding StringFormat="Today's High: {0:F2}{1}" x:DataType="model:WeatherData">
+                            <Binding Path="today_high"/>
+                            <Binding Path="daily_units.temperature_2m_max"/>
+                        </MultiBinding>
+                    </Label.Text>
+                </Label>
+                <Label
+                    FontSize="20">
+                    <Label.Text>
+                        <MultiBinding StringFormat="Today's Low: {0:F2}{1}" x:DataType="model:WeatherData">
+                            <Binding Path="today_low"/>
+                            <Binding Path="daily_units.temperature_2m_min"/>
+                        </MultiBinding>
+                    </Label.Text>
+                </Label>
+                <Label
+                    FontSize="20"
+                    Margin="0,0,0,20">
+                    <Label.Text>
+                        <MultiBinding StringFormat="Apparent Temperature: {0:F2}{1}" x:DataType="model:WeatherData">
+                            <Binding Path="hourly.apparent_temperature_current" />
+                            <Binding Path="hourly_units.apparent_temperature"/>
+                        </MultiBinding>
+                    </Label.Text>
+                </Label>
+                <Label
+                    FontSize="20">
+                    <Label.Text>
+                        <MultiBinding StringFormat="Relative Humidity: {0}{1}" x:DataType="model:WeatherData">
+                            <Binding Path="hourly.relative_humidity_2m_current" />
+                            <Binding Path="hourly_units.relative_humidity_2m"/>
+                        </MultiBinding>
+                    </Label.Text>
+                </Label>
+                <Label
+                    FontSize="20">
+                    <Label.Text>
+                        <MultiBinding StringFormat="Precipitation Probability: {0}{1}" x:DataType="model:WeatherData">
+                            <Binding Path="daily.precipitation_probability_max_current" />
+                            <Binding Path="daily_units.precipitation_probability_max"/>
+                        </MultiBinding>
+                    </Label.Text>
+                </Label>
+                <Label
+                    FontSize="20">
+                    <Label.Text>
+                        <MultiBinding StringFormat="Precipitation Sum: {0}{1}" x:DataType="model:WeatherData">
+                            <Binding Path="daily.precipitation_sum_current" />
+                            <Binding Path="daily_units.precipitation_sum"/>
+                        </MultiBinding>
+                    </Label.Text>
+                </Label>
+                <Label
+                    FontSize="20"
+                    Margin="0,0,0,20">
+                    <Label.Text>
+                        <MultiBinding StringFormat="Precipitation Duration: {0}{1}" x:DataType="model:WeatherData">
+                            <Binding Path="daily.precipitation_hours_current" />
+                            <Binding Path="daily_units.precipitation_hours"/>
+                        </MultiBinding>
+                    </Label.Text>
+                </Label>
+                <Label
+                    FontSize="20"
+                    Margin="0,0,0,20">
+                    <Label.Text>
+                        <MultiBinding StringFormat="Wind Speed, Direction: {0}{1}, {2}{3}" x:DataType="model:WeatherData">
+                            <Binding Path="hourly.wind_speed_10m_current" />
+                            <Binding Path="hourly_units.wind_speed_10m"/>
+                            <Binding Path="hourly.wind_direction_10m_current" />
+                            <Binding Path="hourly_units.wind_direction_10m"/>
+                        </MultiBinding>
+                    </Label.Text>
+                </Label>
+                <Label
+                    FontSize="20">
+                    <Label.Text>
+                        <MultiBinding StringFormat="Max UV Index: {0}{1}" x:DataType="model:WeatherData">
+                            <Binding Path="daily.uv_index_max_current" />
+                            <Binding Path="daily_units.uv_index_max"/>
+                        </MultiBinding>
+                    </Label.Text>
+                </Label>
+                <Label
+                    FontSize="20">
+                    <Label.Text>
+                        <MultiBinding StringFormat="Visibility: {0}{1}" x:DataType="model:WeatherData">
+                            <Binding Path="hourly.visibility_current" />
+                            <Binding Path="hourly_units.visibility"/>
+                        </MultiBinding>
+                    </Label.Text>
+                </Label>
+            </VerticalStackLayout>
         </DataTemplate>
 
         <DataTemplate x:Key="Stock" x:DataType="model:StockData">
@@ -26,5 +173,8 @@
         <local:TimeSeriesDataTemplateSelector x:Key="TimeSeriesDataTemplateSelector"
                                              WeatherDataTemplate="{StaticResource Weather}"
                                              StockDataTemplate="{StaticResource Stock}" />
+        <ResourceDictionary>
+            <toolkit:TextCaseConverter x:Key="TextCaseConverter" Type="FirstUpperRestLower" />
+        </ResourceDictionary>
     </ContentPage.Resources>
 </ContentPage>
