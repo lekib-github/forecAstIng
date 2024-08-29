@@ -9,7 +9,7 @@
              x:DataType="viewmodel:MorePageViewModel"
              Title="{Binding Forecast[0].name}"
              BackgroundColor="#402E7A">
-    
+
     <CollectionView 
         ItemsSource="{Binding Forecast}"
         Margin="20"
@@ -47,8 +47,20 @@
                 <Label 
                     Text="{Binding today_behaviour, Converter={StaticResource TextCaseConverter}}"
                     HorizontalOptions="Center"
+                    FontSize="24"/>
+                <Label 
+                    HorizontalOptions="Center"
                     FontSize="24"
-                    Margin="0,0,0,30"/>
+                    Margin="0,0,0,30">
+                    <Label.Text>
+                        <MultiBinding StringFormat="{}{0}/{1}/{2} {3}h" x:DataType="model:WeatherData">
+                            <Binding Path="hourly.time_current.Day"/>
+                            <Binding Path="hourly.time_current.Month"/>
+                            <Binding Path="hourly.time_current.Year"/>
+                            <Binding Path="hourly.time_current.Hour"/>
+                        </MultiBinding>
+                    </Label.Text>
+                </Label>
                 <Label
                     FontSize="20"
                     Text="{Binding latitude, StringFormat='Latitude: {0:F2}'}"/>                

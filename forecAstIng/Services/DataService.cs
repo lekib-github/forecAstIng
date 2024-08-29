@@ -58,10 +58,9 @@ namespace forecAstIng.Services
             throw new ServiceException($"Bad Server response: {response.StatusCode}. Please check your internet connection and try again.");
         }
 
-        private async Task<WeatherData> WeatherFromCoords(double lat, double lon)
+        public async Task<WeatherData> WeatherFromCoords(double lat, double lon)
         {
             var response = await client.GetAsync($"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation_probability,precipitation,weather_code,visibility,wind_speed_10m,wind_direction_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,daylight_duration,uv_index_max,precipitation_sum,precipitation_hours,precipitation_probability_max&timezone=auto&past_days={TimeSeriesData.DAYS_OF_HISTORY}");
-
             if (response.IsSuccessStatusCode)
             {
                 WeatherData weather;

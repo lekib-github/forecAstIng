@@ -5,9 +5,137 @@
 
 namespace forecAstIng.Model
 {
+    public class TimeSeriesDataLite(TimeSeriesData dataSource)
+    {
+        public int history_length = TimeSeriesData.DAYS_OF_HISTORY;
+        public TimeSeriesData source { get; set; } = dataSource;
+        public DateTime time { get; set; }
+        public string measurement_unit { get; set; }
+        public string current_behaviour { get; set; }
+        public double daily_value_max { get; set; }
+        public double daily_value_min { get; set; }
+        public double hour_value { get; set; }
+    }
+
+    public class DailyHistory(TimeSeriesData dataSource) : TimeSeriesDataLite(dataSource), IEnumerable<DailyHistory>
+    {
+        public IEnumerator<DailyHistory> GetEnumerator()
+        {
+            if (source is WeatherData weatherData)
+            {
+                for (int i = 0; i < history_length; i++)
+                {
+                    weatherData.daily.context_current_day = i;
+
+                    var historyDay = new DailyHistory(source)
+                    {
+                        time = weatherData.daily.time_current,
+                        measurement_unit = weatherData.daily_units.temperature_2m_max,
+                        current_behaviour = WeatherData.WMOToBehaviour(weatherData.daily.weather_code_current),
+                        daily_value_max = weatherData.daily.temperature_2m_max_current,
+                        daily_value_min = weatherData.daily.temperature_2m_min_current,
+                    };
+
+                    weatherData.daily.context_current_day = history_length;
+
+                    yield return historyDay;
+                }
+            }
+
+            if (source is StockData stockData)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+
+    public class DailyForecast(TimeSeriesData dataSource) : TimeSeriesDataLite(dataSource), IEnumerable<DailyForecast>
+    {
+        public IEnumerator<DailyForecast> GetEnumerator()
+        {
+            if (source is WeatherData weatherData)
+            {
+                for (int i = 0; i < history_length; i++)
+                {
+                    weatherData.daily.context_current_day = i + history_length;
+
+                    var historyDay = new DailyForecast(source)
+                    {
+                        time = weatherData.daily.time_current,
+                        measurement_unit = weatherData.daily_units.temperature_2m_max,
+                        current_behaviour = WeatherData.WMOToBehaviour(weatherData.daily.weather_code_current),
+                        daily_value_max = weatherData.daily.temperature_2m_max_current,
+                        daily_value_min = weatherData.daily.temperature_2m_min_current,
+                    };
+
+                    weatherData.daily.context_current_day = history_length;
+
+                    yield return historyDay;
+                }
+            }
+
+            if (source is StockData stockData)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+
+    public class HourlyData(TimeSeriesData dataSource) : TimeSeriesDataLite(dataSource), IEnumerable<HourlyData>
+    {
+        public IEnumerator<HourlyData> GetEnumerator()
+        {
+            if (source is WeatherData weatherData)
+            {
+                for (int i = 0; i < 24; ++i)
+                {
+                    var temp = weatherData.hourly.local_hours_today;
+                    weatherData.hourly.local_hours_today = i;
+
+                    var hour = new HourlyData(source)
+                    {
+                        time = weatherData.hourly.time_current,
+                        measurement_unit = weatherData.hourly_units.temperature_2m,
+                        current_behaviour = WeatherData.WMOToBehaviour(weatherData.hourly.weather_code_current),
+                        hour_value = weatherData.hourly.temperature_2m_current,
+                    };
+
+                    weatherData.hourly.local_hours_today = temp;
+
+                    yield return hour;
+                }
+            }
+
+            if (source is StockData stockData)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+
     public abstract class TimeSeriesData
     {
         public static readonly int DAYS_OF_HISTORY = 7;
+
+        public DailyHistory DailyHistory { get; set; }
+
+        public DailyForecast DailyForecast { get; set; }
+
+        public HourlyData HourlyData { get; set; }
+
+        public TimeSeriesData()
+        {
+            DailyHistory = new DailyHistory(this);
+            DailyForecast = new DailyForecast(this);
+            HourlyData = new HourlyData(this);
+        }
+
         public string name { get; set; }
         public string measurement_unit { get; set; }
         public string timezone { get; set; }
@@ -20,7 +148,7 @@ namespace forecAstIng.Model
     }
 
     public class StockData : TimeSeriesData
-    { 
+    {
     }
 
     public class WeatherData : TimeSeriesData
@@ -48,7 +176,6 @@ namespace forecAstIng.Model
                 _hourly = value;
                 _hourly.local_hours_today = DateTime.UtcNow.Hour + (int) Math.Floor((double) utc_offset_seconds/3600);
                 hour_value = value.temperature_2m_current;
-                System.Diagnostics.Debug.WriteLine(value.time_current);
             } }
         public DailyUnits daily_units { get; set; }
         private Daily _daily;
@@ -78,6 +205,18 @@ namespace forecAstIng.Model
                 _ => "N/A"
             };
         }
+
+        public void RefreshBaseDataForDate(DateTime newDate)
+        {
+            daily.context_current_day -= daily.time_current.Subtract(newDate).Days;
+            hourly.context_current_day = daily.context_current_day;
+
+            hourly_units = _hourly_units;
+            hourly = _hourly;
+            daily = _daily;
+        }
+
+        public void RestoreCurrentDayData() => RefreshBaseDataForDate(DateTime.UtcNow);
     }
 
     // XAML binding in, for example MorePage, doesn't support indexing through variables in Path,
@@ -130,7 +269,7 @@ namespace forecAstIng.Model
         private int context_current_day_index => context_current_day * 24;
         public int local_hours_today { get; set; }
         public DateTime time_current => time[context_current_day_index + local_hours_today];
-        public List<DateTime> time { get; set; }
+        public List<DateTime> time { get; set; } 
         public double temperature_2m_current => temperature_2m[context_current_day_index + local_hours_today];
         public List<double> temperature_2m { get; set; }
         public int relative_humidity_2m_current => relative_humidity_2m[context_current_day_index + local_hours_today];
@@ -141,7 +280,7 @@ namespace forecAstIng.Model
         public List<int> precipitation_probability { get; set; }
         public double precipitation_current => precipitation[context_current_day_index + local_hours_today];
         public List<double> precipitation { get; set; }
-        public double weather_code_current => weather_code[context_current_day_index + local_hours_today];
+        public int weather_code_current => weather_code[context_current_day_index + local_hours_today];
         public List<int> weather_code { get; set; }
         public double visibility_current => visibility[context_current_day_index + local_hours_today];
         public List<double> visibility { get; set; }
