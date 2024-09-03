@@ -8,8 +8,13 @@
              xmlns:model="clr-namespace:forecAstIng.Model"
              xmlns:viewmodel="clr-namespace:forecAstIng.ViewModel"
              x:DataType="viewmodel:ForecastsViewModel"
-             Title="{Binding Title}"
-             BackgroundColor="#402E7A">
+             Title="{Binding Title}">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem 
+            IconImageSource="settings.png"
+            Command="{Binding OpenSettingsPopupCommand}"/>
+    </ContentPage.ToolbarItems>
 
     <RefreshView
         IsRefreshing="{Binding IsRefreshing}"
@@ -28,7 +33,7 @@
                         </Button.CommandParameter>
                         <Button.Triggers>
                             <DataTrigger TargetType="Button" Binding="{Binding TimePage}" Value="history">
-                                <Setter Property="BackgroundColor" Value="AliceBlue"/>
+                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Iris}, Dark={StaticResource LightBlue}}"/>
                                 <Setter Property="Command" Value="{Binding RefreshDataCommand}"/>
                             </DataTrigger>
                         </Button.Triggers>
@@ -41,7 +46,7 @@
                         </Button.CommandParameter>
                         <Button.Triggers>
                             <DataTrigger TargetType="Button" Binding="{Binding TimePage}" Value="today">
-                                <Setter Property="BackgroundColor" Value="AliceBlue"/>
+                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Iris}, Dark={StaticResource LightBlue}}"/>
                                 <Setter Property="Command" Value="{Binding RefreshDataCommand}"/>
                             </DataTrigger>
                         </Button.Triggers>
@@ -54,7 +59,7 @@
                         </Button.CommandParameter>
                         <Button.Triggers>
                             <DataTrigger TargetType="Button" Binding="{Binding TimePage}" Value="forecast">
-                                <Setter Property="BackgroundColor" Value="AliceBlue"/>
+                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Iris}, Dark={StaticResource LightBlue}}"/>
                                 <Setter Property="Command" Value="{Binding RefreshDataCommand}"/>
                             </DataTrigger>
                         </Button.Triggers>
@@ -62,9 +67,7 @@
                 </HorizontalStackLayout>
                 <ActivityIndicator 
                     IsRunning="{Binding IsWorking}"
-                    IsVisible="{Binding IsWorking}"
-                    Color="AliceBlue"/>
-
+                    IsVisible="{Binding IsWorking}"/>
                 <CollectionView 
                     ItemsSource="{Binding Forecasts}"
                     Margin="20">
@@ -74,12 +77,10 @@
                                 Padding="12"
                                 Margin="20"
                                 CornerRadius="10"
-                                BorderColor="White"
                                 HorizontalOptions="Center"
                                 VerticalOptions="Center"
                                 HeightRequest="180"
-                                WidthRequest="360"
-                                BackgroundColor="#4C3BCF">
+                                WidthRequest="360">
                                 <Frame.GestureRecognizers>
                                     <SwipeGestureRecognizer 
                                         Direction="Left"

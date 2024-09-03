@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<toolkit:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+               xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+			   xmlns:local="clr-namespace:forecAstIng.View"
+			   xmlns:s="clr-namespace:System;assembly=mscorlib"
+               xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+               xmlns:viewmodel="clr-namespace:forecAstIng.ViewModel"
+               x:DataType="viewmodel:ForecastsViewModel"
+               x:Class="forecAstIng.View.SettingsPrompt">
+
+	<toolkit:Popup.Resources>  
+           <ResourceDictionary>  
+               <local:SettingsConverter x:Key="SettingsConverter" />  
+           </ResourceDictionary>  
+	</toolkit:Popup.Resources>
+	<Frame
+		HeightRequest="600"
+		Padding="30"
+        CornerRadius="0">
+		<VerticalStackLayout>
+			<Label 
+				Text="Settings"
+				FontSize="24"/>
+			<Label 
+				Text="App theme"
+				FontSize="18"
+				Padding="0,30,0,0"/>
+			<Picker
+				x:Name="Theme"
+				Title="Select theme...">
+				<Picker.Items>
+					<s:String>System theme</s:String>
+					<s:String>Light</s:String>
+					<s:String>Dark</s:String>
+				</Picker.Items>
+			</Picker>
+			<Label
+				Text="Weather units"
+				FontSize="18"
+				Padding="0,30,0,0"/>
+			<Picker
+				x:Name="Units"
+				Title="Select weather units...">
+				<Picker.Items>
+					<s:String>Celsius</s:String>
+					<s:String>Fahrenheit</s:String>
+				</Picker.Items>
+			</Picker>
+			<Label 
+				Text="History/forecast interval length"
+				FontSize="18"
+				Padding="0,30,0,0"/>
+			<Picker
+				x:Name="Interval"
+				Title="Select interval length..."
+				Margin="0,0,0,30"
+				SelectedIndex="1">
+				<Picker.Items>
+					<s:String>2 days</s:String>
+					<s:String>3 days</s:String>
+					<s:String>5 days</s:String>
+					<s:String>7 days</s:String>
+				</Picker.Items>
+			</Picker>
+			<Button
+			    Text="Apply selected"
+				HorizontalOptions="Center"
+                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ForecastsViewModel}}, Path=ApplySettingsCommand}">
+				<Button.CommandParameter>  
+                    <MultiBinding Converter="{StaticResource SettingsConverter}">  
+                        <MultiBinding.Bindings>  
+                            <Binding Path="SelectedItem" Source="{x:Reference Theme}" />  
+                            <Binding Path="SelectedItem" Source="{x:Reference Units}"/>  
+                            <Binding Path="SelectedItem" Source="{x:Reference Interval}"/>  
+                        </MultiBinding.Bindings>  
+                    </MultiBinding>  
+                </Button.CommandParameter>  
+			</Button>
+		</VerticalStackLayout>
+	</Frame>
+</toolkit:Popup>

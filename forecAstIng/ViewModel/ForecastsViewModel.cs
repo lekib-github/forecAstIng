@@ -10,6 +10,7 @@ namespace forecAstIng.ViewModel
     public partial class ForecastsViewModel : BaseViewModel
     {
         Popup? searchPopup;
+        Popup? settingsPopup;
         public ObservableCollection<TimeSeriesData> Forecasts { get; } = new();
         DataService dataService;
         [ObservableProperty]
@@ -121,6 +122,19 @@ namespace forecAstIng.ViewModel
         }
 
         [RelayCommand]
+        void OpenSettingsPopup()
+        {
+            if (IsWorking) return;
+
+            IsWorking = true;
+
+            settingsPopup = new SettingsPrompt();
+            Shell.Current.ShowPopup(settingsPopup);
+
+            IsWorking = false;
+        }
+
+        [RelayCommand]
         async Task AddRequested(string requestedName)
         {
             if (IsWorking) return;
@@ -158,6 +172,31 @@ namespace forecAstIng.ViewModel
             {
                 IsWorking = false;
             }
+        }
+
+        [RelayCommand]
+        async Task ApplySettings((AppTheme theme, string unit, int interval) parameters)
+        {
+            bool refreshFlag = false;
+
+            if (DataService.UNIT != parameters.unit)
+            {
+                DataService.UNIT = parameters.unit;
+                refreshFlag = true;
+            }
+
+            if (TimeSeriesData.DAYS_OF_HISTORY != parameters.interval)
+            {
+                TimeSeriesData.DAYS_OF_HISTORY = parameters.interval;
+                refreshFlag = true;
+            }
+
+            Application.Current.UserAppTheme = parameters.theme;
+
+            if (refreshFlag) await RefreshData();
+
+            settingsPopup!.Close();
+            settingsPopup = null;
         }
 
         [RelayCommand]

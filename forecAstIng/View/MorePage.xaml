@@ -7,8 +7,7 @@
              xmlns:local="clr-namespace:forecAstIng.View"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:DataType="viewmodel:MorePageViewModel"
-             Title="{Binding Forecast[0].name}"
-             BackgroundColor="#402E7A">
+             Title="{Binding Forecast[0].name}">
 
     <CollectionView 
         ItemsSource="{Binding Forecast}"
@@ -19,14 +18,13 @@
         <DataTemplate x:Key="Weather" x:DataType="model:WeatherData">
             <VerticalStackLayout>
                 <Border StrokeShape="RoundRectangle 80"
-                    Stroke="Black"
                     StrokeThickness="6"
                     HeightRequest="172"
                     WidthRequest="172"
                     Margin="0,8,0,20"
                     HorizontalOptions="Center"
                     VerticalOptions="Center"
-                    Background="AliceBlue">
+                    Background="{AppThemeBinding Light={StaticResource Iris}, Dark={StaticResource LightBlue}}">
                     <Image 
                         Source="{Binding today_behaviour, StringFormat='{0}.png'}"
                         HorizontalOptions="Center"
@@ -50,8 +48,7 @@
                     FontSize="24"/>
                 <Label 
                     HorizontalOptions="Center"
-                    FontSize="24"
-                    Margin="0,0,0,30">
+                    FontSize="24">
                     <Label.Text>
                         <MultiBinding StringFormat="{}{0}/{1}/{2} {3}h" x:DataType="model:WeatherData">
                             <Binding Path="hourly.time_current.Day"/>
@@ -61,6 +58,41 @@
                         </MultiBinding>
                     </Label.Text>
                 </Label>
+                <Frame
+                    Padding="12"
+                    Margin="20"
+                    CornerRadius="10"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"
+                    HeightRequest="150"
+                    WidthRequest="360">
+                    <CollectionView 
+                    ItemsLayout="HorizontalList"
+                    ItemsSource="{Binding HourlyData}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="model:HourlyData">
+                                <StackLayout
+                                Margin="15,0,15,0">
+                                    <Label 
+                                    HorizontalOptions="Center"
+                                    Text="{Binding time.Hour}"/>
+                                    <Image
+                                    HorizontalOptions="Center"
+                                    Source="{Binding current_behaviour, StringFormat='{0}.png'}"/>
+                                    <Label
+                                    HorizontalOptions="Center">
+                                        <Label.Text>
+                                            <MultiBinding StringFormat="{}{0}{1}">
+                                                <Binding Path="hour_value"/>
+                                                <Binding Path="measurement_unit"/>
+                                            </MultiBinding>
+                                        </Label.Text>
+                                    </Label>
+                                </StackLayout>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Frame>
                 <Label
                     FontSize="20"
                     Text="{Binding latitude, StringFormat='Latitude: {0:F2}'}"/>                

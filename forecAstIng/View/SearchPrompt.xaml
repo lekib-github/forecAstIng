@@ -9,7 +9,6 @@
     <Frame
 		HeightRequest="150"
         WidthRequest="300"
-        BackgroundColor="#402E7A"
         Padding="0"
         CornerRadius="0">
         <VerticalStackLayout>
