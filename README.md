@@ -8,7 +8,7 @@
 
 ## Programming Languages and Frameworks
 
-- **C#** with **MAUI** _OR_ Avalonia for frontend (i.e the app itself)
+- **C#** with **MAUI** for frontend (i.e the app itself)
 - **Python** with scikit-learn and/or Pandas, and PyTorch _OR_ TensorFlow Lite _OR_ EON Compiler (Edge platform)
 
 ## Key Steps
@@ -21,7 +21,7 @@
     - Basics of the **Pandas** and **ML libraries** for Python
         - Various online resources such as _guides_ and _tutorials_.
         - Official [documentation](https://pandas.pydata.org/docs/).
-    - Android app development with **MAUI** _or_ Avalonia for C#
+    - Android app development with **MAUI** for C#
         - Various online resources such as _guides_ and _tutorials_.
         - Official [documentation](https://learn.microsoft.com/en-us/dotnet/maui/?view=net-maui-8.0).
 2. Sourcing and processing of **training data**, and **training** the model 

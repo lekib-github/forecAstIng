@@ -96,6 +96,7 @@ namespace forecAstIng.ViewModel
             }
         }
 
+        // Variable for data triggers on buttons for switching History/Today/Forecast tabs
         [RelayCommand]
         void LoadTimeFrame(TimeFrame timeFrame)
         {

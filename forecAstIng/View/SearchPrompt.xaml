@@ -14,10 +14,10 @@
         <VerticalStackLayout>
             <Entry
 				x:Name="entry"
-                Placeholder="Enter location..."
+                Placeholder="Enter location/stock..."
                 Margin="20"/>
             <Button
-			    Text="Add"
+			    Text="Add location"
 				HorizontalOptions="Center"
                 CommandParameter="{Binding Source={x:Reference entry}, Path=Text}"
                 Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ForecastsViewModel}}, Path=AddRequestedCommand}"/>

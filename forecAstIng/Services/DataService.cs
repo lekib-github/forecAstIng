@@ -92,11 +92,14 @@ namespace forecAstIng.Services
         {
             var geocodes = await GeocodeAddress(requestedName);
 
+            // Crude way to honor 1 req/s from Geocoding API, otherwise consistent TooManyRequests error codes..
+            Thread.Sleep(1000);
+
             // Geocode -> Geoloc for more granular data on the location; Geocodes return specific addresses as display_name,
             // while Geolocs return more detailed information on the location, such as the country, state, city, and more, which
             // we can use to manipulate our TimeSeriesData objects better.
-
             var geoloc = await GeolocateCoords(double.Parse(geocodes[0].lat), double.Parse(geocodes[0].lon));
+
             var weather = await WeatherFromCoords(double.Parse(geoloc.lat), double.Parse(geoloc.lon));
 
             return (geoloc, weather);

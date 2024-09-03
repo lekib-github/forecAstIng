@@ -17,6 +17,7 @@ namespace forecAstIng.View
         }
         public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
+            // null tests in each converter results in current value = no change, because null is the default in combo box
             string unit = values[1] is null ? DataService.UNIT : ((string)values[1]).ToLower();
             int interval = values[2] is null ? TimeSeriesData.DAYS_OF_HISTORY : int.Parse(((string)values[2])[0].ToString());
 
@@ -28,6 +29,7 @@ namespace forecAstIng.View
             throw new NotImplementedException();
         }
     }
+
     public partial class SettingsPrompt : Popup
     {
         public SettingsPrompt()
