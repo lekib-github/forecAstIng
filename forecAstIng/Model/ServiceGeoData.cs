@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace forecAstIng.Model
 {
@@ -26,8 +26,8 @@ namespace forecAstIng.Model
         public string county { get; set; }
         public string state { get; set; }
 
-        [JsonProperty("ISO3166-2-lvl4")]
-        public string ISO31662lvl4 { get; set; }
+        [JsonPropertyName("ISO3166-2-lvl6")]
+        public string ISO31662lvl6 { get; set; }
         public string postcode { get; set; }
         public string country { get; set; }
         public string country_code { get; set; }

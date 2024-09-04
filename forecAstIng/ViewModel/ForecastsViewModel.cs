@@ -2,10 +2,13 @@
 using forecAstIng.Services;
 using forecAstIng.View;
 using static forecAstIng.ViewModel.TimeFrame;
+using static forecAstIng.ViewModel.DataTypes;
 
 namespace forecAstIng.ViewModel
 {
     public enum TimeFrame { history, today, forecast };
+
+    public enum DataTypes { weather, stock };
 
     public partial class ForecastsViewModel : BaseViewModel
     {
@@ -92,7 +95,10 @@ namespace forecAstIng.ViewModel
             }
             else if (forecast.source is StockData stock)
             {
-                throw new NotImplementedException();
+                var temp = stock.dailyData.metadata.lastRefreshed;
+                stock.RefreshBaseDataForDate(forecast.time);
+                await GoToMorePage(stock);
+                stock.RefreshBaseDataForDate(temp);
             }
         }
 
@@ -135,8 +141,7 @@ namespace forecAstIng.ViewModel
             IsWorking = false;
         }
 
-        [RelayCommand]
-        async Task AddRequested(string requestedName)
+        async Task AddRequested(string requestedName, DataTypes type)
         {
             if (IsWorking) return;
 
@@ -147,9 +152,19 @@ namespace forecAstIng.ViewModel
 
                 if (accessType == NetworkAccess.Internet)
                 {
-                    var (geoloc, weather) = await dataService.GetData(requestedName);
+                    TimeSeriesData toAdd;
 
-                    Forecasts.Add(ConstructWeatherData(geoloc, weather));
+                    if (type == weather)
+                    {
+                        var (geoloc, weather) = await dataService.GetWeatherData(requestedName);
+                        toAdd = ConstructWeatherData(geoloc, weather);
+                    }
+                    else
+                    {
+                        toAdd = await dataService.GetStockData(requestedName);
+                    }
+
+                    Forecasts.Add(toAdd);
                 }
 
                 else
@@ -165,8 +180,9 @@ namespace forecAstIng.ViewModel
                 await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
             }
             // Handling unknown exceptions separately so as to not leak any sensitive information
-            catch (Exception)
+            catch (Exception ex)
             {
+                Debug.WriteLine(ex.Message);
                 await Shell.Current.DisplayAlert("Error", "Unknown error. Please try again later.", "OK");
             }
             finally
@@ -174,6 +190,12 @@ namespace forecAstIng.ViewModel
                 IsWorking = false;
             }
         }
+
+        [RelayCommand]
+        async Task AddLocation(string requestedName) => await AddRequested(requestedName, weather);
+
+        [RelayCommand]
+        async Task AddStock(string requestedName) => await AddRequested(requestedName, stock);
 
         [RelayCommand]
         async Task ApplySettings((AppTheme theme, string unit, int interval) parameters)
@@ -221,7 +243,8 @@ namespace forecAstIng.ViewModel
                 }
                 else if (dataOld is StockData stockOld)
                 {
-                    throw new NotImplementedException();
+                    // Expensive to refresh :(
+                    Forecasts[i] = stockOld;
                 }
             }
 

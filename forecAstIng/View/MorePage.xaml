@@ -211,7 +211,130 @@
         </DataTemplate>
 
         <DataTemplate x:Key="Stock" x:DataType="model:StockData">
-            <Label Text="{Binding name}" />
+            <VerticalStackLayout>
+                <Border StrokeShape="RoundRectangle 80"
+                    StrokeThickness="6"
+                    HeightRequest="172"
+                    WidthRequest="172"
+                    Margin="0,8,0,20"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"
+                    Background="{AppThemeBinding Light={StaticResource Iris}, Dark={StaticResource LightBlue}}">
+                    <Image 
+                        Source="{Binding today_behaviour, StringFormat='{0}.png'}"
+                        HorizontalOptions="Center"
+                        HeightRequest="80"
+                        WidthRequest="80"
+                        Aspect="AspectFill"/>
+                </Border>
+                <Label 
+                    HorizontalOptions="Center"
+                    FontSize="32">
+                    <Label.Text>
+                        <MultiBinding StringFormat="{}{0:F2}{1}" x:DataType="model:StockData">
+                            <Binding Path="hour_value"/>
+                            <Binding Path="fundamentals.Currency"/>
+                        </MultiBinding>
+                    </Label.Text>
+                </Label>
+                <Label 
+                    Text="{Binding today_behaviour, Converter={StaticResource TextCaseConverter}}"
+                    HorizontalOptions="Center"
+                    FontSize="24"/>
+                <Label 
+                    HorizontalOptions="Center"
+                    FontSize="24">
+                    <Label.Text>
+                        <MultiBinding StringFormat="{}{0}/{1}/{2} {3}h" x:DataType="model:StockData">
+                            <Binding Path="intradayData.metadata.lastRefreshed.Day"/>
+                            <Binding Path="intradayData.metadata.lastRefreshed.Month"/>
+                            <Binding Path="intradayData.metadata.lastRefreshed.Year"/>
+                            <Binding Path="intradayData.metadata.lastRefreshed.Hour"/>
+                        </MultiBinding>
+                    </Label.Text>
+                </Label>
+                <Frame
+                    Padding="12"
+                    Margin="20"
+                    CornerRadius="10"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"
+                    HeightRequest="150"
+                    WidthRequest="360">
+                    <CollectionView 
+                        ItemsLayout="HorizontalList"
+                        ItemsSource="{Binding HourlyData}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="model:HourlyData">
+                                <StackLayout
+                                    Margin="15,0,15,0">
+                                    <Label 
+                                        HorizontalOptions="Center"
+                                        Text="{Binding time.Hour}"/>
+                                    <Image
+                                        HorizontalOptions="Center"
+                                        Source="{Binding current_behaviour, StringFormat='{0}.png'}"/>
+                                    <Label
+                                        HorizontalOptions="Center">
+                                        <Label.Text>
+                                            <MultiBinding StringFormat="{}{0}{1}">
+                                                <Binding Path="hour_value"/>
+                                                <Binding Path="measurement_unit"/>
+                                            </MultiBinding>
+                                        </Label.Text>
+                                    </Label>
+                                </StackLayout>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Frame>
+                <Label
+                    FontSize="20"
+                    Text="{Binding fundamentals.Name, StringFormat='Name: {0}'}"/>
+                <Label
+                    FontSize="20"
+                    Margin="0,0,0,30"
+                    Text="{Binding fundamentals.Symbol, StringFormat='Symbol: {0}'}"/>
+                <Label
+                    FontSize="20"
+                    Margin="0,0,0,30"
+                    Text="{Binding fundamentals.Description}"/>
+                <Label
+                    FontSize="20"
+                    Text="{Binding fundamentals.Currency, StringFormat='Currency: {0}'}"/>
+                <Label
+                    FontSize="20"
+                    Text="{Binding fundamentals.Country, StringFormat='Country: {0}'}"
+                    Margin="0,0,0,30"/>
+                <Label
+                    FontSize="20"
+                    Text="{Binding fundamentals.Sector, StringFormat='Sector: {0}'}"/>
+                <Label
+                    FontSize="20"
+                    Text="{Binding fundamentals.Industry, StringFormat='Industry: {0}'}"
+                    Margin="0,0,0,30"/>
+                <Label
+                    FontSize="20"
+                    Text="{Binding fundamentals.MarketCapitalization, StringFormat='Market cap: {0:N2}'}"
+                    Margin="0,0,0,30"/>
+                <Label
+                    FontSize="20"
+                    Text="{Binding fundamentals._52WeekHigh, StringFormat='52 week high: {0:N2}'}"/>
+                <Label
+                    FontSize="20"
+                    Margin="0,0,0,30"
+                    Text="{Binding fundamentals._52WeekLow, StringFormat='52 week low: {0:N2}'}"/>
+                <Label
+                    FontSize="20"
+                    Text="{Binding fundamentals._50DayMovingAverage, StringFormat='50 day MA: {0}'}"/>
+                <Label
+                    FontSize="20"
+                    Margin="0,0,0,30"
+                    Text="{Binding fundamentals._200DayMovingAverage, StringFormat='200 day MA: {0}'}"/>
+                <Label
+                    FontSize="20"
+                    Text="{Binding fundamentals.Name, StringFormat=''}"/>
+            </VerticalStackLayout>
         </DataTemplate>
 
         <local:TimeSeriesDataTemplateSelector x:Key="TimeSeriesDataTemplateSelector"

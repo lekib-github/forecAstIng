@@ -1,5 +1,5 @@
 ﻿// The naming in Model namespace is inconsistent with the rest of the project.
-// This was done to make it internally consistent without needing to specify JsonProperty
+// This was done to make it internally consistent without needing to specify JsonPropertyName
 // for each property in both ServiceGeoData.cs and TimeSeriesData.cs. The APIs used
 // use snake_case.
 
@@ -7,7 +7,7 @@ namespace forecAstIng.Model
 {
     public class TimeSeriesDataLite(TimeSeriesData dataSource)
     {
-        public int history_length = TimeSeriesData.DAYS_OF_HISTORY;
+        public int history_length => TimeSeriesData.DAYS_OF_HISTORY;
         public TimeSeriesData source { get; set; } = dataSource;
         public DateTime time { get; set; }
         public string measurement_unit { get; set; }
@@ -44,7 +44,31 @@ namespace forecAstIng.Model
 
             if (source is StockData stockData)
             {
-                throw new NotImplementedException();
+                var nonTradingDayOffset = 0;
+                var reverseOrderDates = new List<DailyHistory>();
+
+                for (int i = 1; i <= history_length; i++)
+                {
+                    var pastTime = stockData.dailyData.metadata.lastRefreshed.Subtract(TimeSpan.FromDays(i+nonTradingDayOffset));
+                    while (!stockData.dailyData.DailyValues.ContainsKey(pastTime))
+                    {
+                        nonTradingDayOffset++;
+                        pastTime = stockData.dailyData.metadata.lastRefreshed.Subtract(TimeSpan.FromDays(i + nonTradingDayOffset));
+                    }
+                    
+                    var pastValue = stockData.dailyData.DailyValues[pastTime];
+
+                    reverseOrderDates.Add(new DailyHistory(source)
+                    {
+                        time = pastTime,
+                        measurement_unit = stockData.fundamentals.Currency,
+                        current_behaviour = pastValue.open > pastValue.close ? "down_today" : "up_today",
+                        daily_value_max = pastValue.high,
+                        daily_value_min = pastValue.low,
+                    });
+                }
+
+                for (int i = reverseOrderDates.Count - 1; i >= 0; i--) yield return reverseOrderDates[i];
             }
         }
 
@@ -78,7 +102,13 @@ namespace forecAstIng.Model
 
             if (source is StockData stockData)
             {
-                throw new NotImplementedException();
+                // Don't have forecats data for stocks yet.
+                yield return new DailyForecast(source)
+                {
+                    measurement_unit = "The future is uncertain."
+                };
+
+                yield break;
             }
         }
 
@@ -112,7 +142,25 @@ namespace forecAstIng.Model
 
             if (source is StockData stockData)
             {
-                throw new NotImplementedException();
+                var contextDay = stockData.intradayData.metadata.lastRefreshed;
+                var openTime = stockData.intradayData.IntradayValues.Where(x => x.Key.Date == contextDay.Date).Min(x => x.Key.Hour);
+                var closeTime = stockData.intradayData.IntradayValues.Where(x => x.Key.Date == contextDay.Date).Max(x => x.Key.Hour);
+
+                for (int i = openTime; i <= closeTime; i++)
+                {
+                    var transition = new TimeSpan(i, 0, 0);
+                    contextDay = contextDay.Date + transition;
+
+                    var pastValue = stockData.intradayData.IntradayValues[contextDay];
+
+                    yield return new HourlyData(source)
+                    {
+                        time = contextDay,
+                        measurement_unit = stockData.fundamentals.Currency,
+                        current_behaviour = pastValue.open > pastValue.close ? "down_today" : "up_today",
+                        hour_value = pastValue.close
+                    };
+                }
             }
         }
 
@@ -121,7 +169,7 @@ namespace forecAstIng.Model
 
     public abstract class TimeSeriesData
     {
-        public static int DAYS_OF_HISTORY = 7;
+        public static int DAYS_OF_HISTORY = 5;
 
         public DailyHistory DailyHistory { get; set; }
 
@@ -138,7 +186,6 @@ namespace forecAstIng.Model
 
         public string name { get; set; }
         public string measurement_unit { get; set; }
-        public string timezone { get; set; }
 
         public double today_high { get; set; }
         public double today_low { get; set; }

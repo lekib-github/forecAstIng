@@ -16,11 +16,20 @@
 				x:Name="entry"
                 Placeholder="Enter location/stock..."
                 Margin="20"/>
-            <Button
-			    Text="Add location"
-				HorizontalOptions="Center"
-                CommandParameter="{Binding Source={x:Reference entry}, Path=Text}"
-                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ForecastsViewModel}}, Path=AddRequestedCommand}"/>
-        </VerticalStackLayout>
+			<HorizontalStackLayout>
+				<Button
+			        Text="Add location"
+					Margin="25,0,20,0"
+				    HorizontalOptions="Center"
+                    CommandParameter="{Binding Source={x:Reference entry}, Path=Text}"
+					Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ForecastsViewModel}}, Path=AddLocationCommand}"/>
+                <Button
+			        Text="Add stock"
+					Margin="20,0,20,0"
+				    HorizontalOptions="Center"
+                    CommandParameter="{Binding Source={x:Reference entry}, Path=Text}"
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ForecastsViewModel}}, Path=AddStockCommand}"/>
+			</HorizontalStackLayout>
+		</VerticalStackLayout>
     </Frame>
 </toolkit:Popup>

@@ -10,7 +10,6 @@ The forecAstIng app is written in the C# and XAML languages, targeting the .NET,
  4. Microsoft.Maui.Controls
  5. Microsoft.Maui.Controls.Compatibility
  6. Microsoft.NET.ILLink.Tasks
- 7. Newtonsoft.Json
 
 ## Architecture design, APIs, and code
 
