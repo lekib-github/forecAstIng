@@ -8,18 +8,34 @@ attrs==24.2.0
     # via
     #   cattrs
     #   requests-cache
+blinker==1.8.2
+    # via flask
 cattrs==24.1.1
     # via requests-cache
 certifi==2024.8.30
     # via requests
 charset-normalizer==3.3.2
     # via requests
+click==8.1.7
+    # via flask
+colorama==0.4.6
+    # via click
+flask==3.0.3
+    # via -r .\requirements.in
 flatbuffers==24.3.25
     # via openmeteo-sdk
 idna==3.10
     # via requests
+itsdangerous==2.2.0
+    # via flask
+jinja2==3.1.4
+    # via flask
 joblib==1.4.2
     # via scikit-learn
+markupsafe==2.1.5
+    # via
+    #   jinja2
+    #   werkzeug
 numpy==2.1.1
     # via
     #   -r .\requirements.in
@@ -66,3 +82,5 @@ urllib3==2.2.3
     #   requests
     #   requests-cache
     #   retry-requests
+werkzeug==3.0.4
+    # via flask

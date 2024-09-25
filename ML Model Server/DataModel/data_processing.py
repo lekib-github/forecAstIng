@@ -1,8 +1,12 @@
 ﻿from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, Normalizer
 
+from DataModel.weather_prediction_data import HourlyWeatherPredictionData, weather_data_encoder
+import MLModel
+
 import pandas as pd
 import numpy as np
+import json
 
 pd.options.display.max_columns = 10
 pd.options.display.max_rows = 10
@@ -50,3 +54,15 @@ def data_preprocess_pipeline(data, hours_in_input, hours_in_output):
     targets = np.array([np.concatenate(data_out[i:i + hours_in_output]) for i in range(hours_in_input, len(data) - hours_in_output, hours_in_input)])
 
     return inputs, targets, scaler_in, scaler_out
+
+
+def prepare_json_text_from_aray_prediction(prediction_arr, ct_out, start_date):
+    prediction_arr = ct_out.named_transformers_["std scaler"].inverse_transform(prediction_arr.reshape(MLModel.model_training.HOURS_IN_OUTPUT, 5))
+
+    df = pd.DataFrame({'temperature_2m': prediction_arr[:, 0], 'relative_humidity_2m': prediction_arr[:, 1],
+                       'apparent_temperature': prediction_arr[:, 2], 'precipitation': prediction_arr[:, 3],
+                       'wind_speed_10m': prediction_arr[:, 4]})
+
+    prediction_object = HourlyWeatherPredictionData(df, start_date)
+
+    return json.dumps(prediction_object, default=weather_data_encoder, indent=4)

@@ -5,17 +5,25 @@ from retry_requests import retry
 import pandas as pd
 
 
+# Set up the Open-Meteo API client with cache and retry on error
+cache_session = requests_cache.CachedSession('.cache', expire_after=-1)
+retry_session = retry(cache_session, retries=5, backoff_factor=0.2)
+open_meteo_client = openmeteo_requests.Client(session=retry_session)
+
+
 # Can be refactored to support provided variables instead of hardcoded - other data might need
 # to be experimented with
-def pull_data_via_client(lat, lon, client):
+def pull_data_via_client(lat, lon, start_date, end_date, history_or_forecast, client):
     # Make sure all required weather variables are listed here
     # The order of variables in hourly or daily is important to assign them correctly below
-    url = "https://archive-api.open-meteo.com/v1/archive"
+
+    # For predictions, "forecast" api has to be used since archive lags behind 5 days..
+    url = "https://archive-api.open-meteo.com/v1/archive" if history_or_forecast == "history" else "https://api.open-meteo.com/v1/forecast"
     params = {
         "latitude": lat,
         "longitude": lon,
-        "start_date": "2000-01-01",
-        "end_date": "2023-12-31",
+        "start_date": start_date,
+        "end_date": end_date,
         "hourly": ["temperature_2m", "relative_humidity_2m", "apparent_temperature",
                    "precipitation", "wind_speed_10m"]
     }
@@ -50,9 +58,4 @@ def pull_data_via_client(lat, lon, client):
 
 
 def get_dataframe_from_coords(lat, lon):
-    # Set up the Open-Meteo API client with cache and retry on error
-    cache_session = requests_cache.CachedSession('.cache', expire_after=-1)
-    retry_session = retry(cache_session, retries=5, backoff_factor=0.2)
-    open_meteo = openmeteo_requests.Client(session=retry_session)
-
-    return pull_data_via_client(lat, lon, open_meteo)
+    return pull_data_via_client(lat, lon, "2000-01-01", "2023-12-31", "history", open_meteo_client)
