@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using System.Globalization;
+using System.Net.Http.Json;
 
 namespace forecAstIng.Services
 {
@@ -62,11 +63,24 @@ namespace forecAstIng.Services
         public async Task<WeatherData> WeatherFromCoords(double lat, double lon)
         {
             var response = await client.GetAsync($"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation_probability,precipitation,weather_code,visibility,wind_speed_10m,wind_direction_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,daylight_duration,uv_index_max,precipitation_sum,precipitation_hours,precipitation_probability_max&temperature_unit={UNIT}&timezone=auto&past_days={TimeSeriesData.DAYS_OF_HISTORY}&forecast_days={TimeSeriesData.DAYS_OF_HISTORY}");
+            var date = DateTime.UtcNow;
+            var response_ml_model = await client.GetAsync($"http://localhost/forecast?lat={lat}&lon={lon}&date={date.Year}-{date.Month:D2}-{date.Day:D2}");
             
             if (response.IsSuccessStatusCode)
             {
                 WeatherData weather;
                 weather = await response.Content.ReadFromJsonAsync<WeatherData>();
+                Hourly prediction;
+                prediction = await response_ml_model.Content.ReadFromJsonAsync<Hourly>();
+                for (var i=0; i< prediction.time.Count; i++)
+                {
+                    Debug.WriteLine(prediction.time[i]);
+                    Debug.WriteLine(prediction.temperature_2m[i]);
+                    Debug.WriteLine(prediction.relative_humidity_2m[i]);
+                    Debug.WriteLine(prediction.apparent_temperature[i]);
+                    Debug.WriteLine(prediction.precipitation[i]);
+                    Debug.WriteLine(prediction.wind_speed_10m[i]);
+                }
 
                 return weather;
             }

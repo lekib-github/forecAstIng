@@ -32,6 +32,16 @@
                 hour_value = value.temperature_2m_current;
             }
         }
+        // Will have only some of the properties of the full Hourly class, dictated by model outputs..
+        private Hourly _hourly_ml_model_predictions { get; set; }
+        public Hourly hourly_ml_model_predictions {
+            get => _hourly_ml_model_predictions;
+            set
+            {
+                _hourly_ml_model_predictions = value;
+                _hourly.local_hours_today = DateTime.UtcNow.Hour + (int)Math.Floor((double)utc_offset_seconds / 3600);
+            }
+        }
         public DailyUnits daily_units { get; set; }
         private Daily _daily;
         public Daily daily
@@ -131,8 +141,8 @@
         public List<DateTime> time { get; set; }
         public double temperature_2m_current => temperature_2m[context_current_day_index + local_hours_today];
         public List<double> temperature_2m { get; set; }
-        public int relative_humidity_2m_current => relative_humidity_2m[context_current_day_index + local_hours_today];
-        public List<int> relative_humidity_2m { get; set; }
+        public double relative_humidity_2m_current => relative_humidity_2m[context_current_day_index + local_hours_today];
+        public List<double> relative_humidity_2m { get; set; }
         public double apparent_temperature_current => apparent_temperature[context_current_day_index + local_hours_today];
         public List<double> apparent_temperature { get; set; }
         public int precipitation_probability_current => precipitation_probability[context_current_day_index + local_hours_today];
