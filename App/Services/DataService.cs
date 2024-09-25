@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 
 namespace forecAstIng.Services
 {
@@ -52,7 +51,7 @@ namespace forecAstIng.Services
                     return geoloc;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw new ServiceException("Unable to geolocate.");
             }
@@ -72,15 +71,6 @@ namespace forecAstIng.Services
                 weather = await response.Content.ReadFromJsonAsync<WeatherData>();
                 Hourly prediction;
                 prediction = await response_ml_model.Content.ReadFromJsonAsync<Hourly>();
-                for (var i=0; i< prediction.time.Count; i++)
-                {
-                    Debug.WriteLine(prediction.time[i]);
-                    Debug.WriteLine(prediction.temperature_2m[i]);
-                    Debug.WriteLine(prediction.relative_humidity_2m[i]);
-                    Debug.WriteLine(prediction.apparent_temperature[i]);
-                    Debug.WriteLine(prediction.precipitation[i]);
-                    Debug.WriteLine(prediction.wind_speed_10m[i]);
-                }
 
                 return weather;
             }

@@ -53,9 +53,8 @@ namespace forecAstIng.ViewModel
 
                 Forecasts.Add(ConstructWeatherData(geoloc, weather));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Debug.WriteLine(ex.Message);
                 await Shell.Current.DisplayAlert("Error", "Attempt to add your location to forecasts automatically failed, consider adding it manually.", "OK");
             }
             finally
@@ -181,7 +180,7 @@ namespace forecAstIng.ViewModel
                 await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
             }
             // Handling unknown exceptions separately so as to not leak any sensitive information
-            catch (Exception ex)
+            catch (Exception)
             {
                 await Shell.Current.DisplayAlert("Error", "Unknown error. Please try again later.", "OK");
             }
