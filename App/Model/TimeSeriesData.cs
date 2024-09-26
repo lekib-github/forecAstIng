@@ -15,6 +15,12 @@ namespace forecAstIng.Model
         public double daily_value_max { get; set; }
         public double daily_value_min { get; set; }
         public double hour_value { get; set; }
+        // Below only used in HourlyData and only on Today and Forecasts MorePage
+        public double ml_pred_temperature_2m_hour_value { get; set; }
+        public double ml_pred_relative_humidity_hour_value { get; set; }
+        public double ml_pred_apparent_temperature_hour_value { get; set; }
+        public double ml_pred_precipitation_hour_value { get; set; }
+        public double ml_pred_wind_speed_10m_hour_value { get; set; }
     }
 
     public class DailyHistory(TimeSeriesData dataSource) : TimeSeriesDataLite(dataSource), IEnumerable<DailyHistory>
@@ -119,12 +125,14 @@ namespace forecAstIng.Model
     {
         public IEnumerator<HourlyData> GetEnumerator()
         {
+
             if (source is WeatherData weatherData)
             {
                 for (int i = 0; i < 24; ++i)
                 {
                     var temp = weatherData.hourly.local_hours_today;
                     weatherData.hourly.local_hours_today = i;
+                    weatherData.hourly_ml_model_predictions.local_hours_today = i;
 
                     var hour = new HourlyData(source)
                     {
@@ -134,7 +142,17 @@ namespace forecAstIng.Model
                         hour_value = weatherData.hourly.temperature_2m_current,
                     };
 
+                    if (weatherData.hourly_ml_model_predictions.context_current_day >= 0)
+                    {
+                        hour.ml_pred_temperature_2m_hour_value = weatherData.hourly_ml_model_predictions.temperature_2m_current;
+                        hour.ml_pred_relative_humidity_hour_value = weatherData.hourly_ml_model_predictions.relative_humidity_2m_current;
+                        hour.ml_pred_apparent_temperature_hour_value = weatherData.hourly_ml_model_predictions.apparent_temperature_current;
+                        hour.ml_pred_precipitation_hour_value = weatherData.hourly_ml_model_predictions.precipitation_current;
+                        hour.ml_pred_wind_speed_10m_hour_value = weatherData.hourly_ml_model_predictions.wind_speed_10m_current;
+                    }
+
                     weatherData.hourly.local_hours_today = temp;
+                    weatherData.hourly_ml_model_predictions.local_hours_today = temp;
 
                     yield return hour;
                 }
@@ -176,6 +194,8 @@ namespace forecAstIng.Model
         public DailyForecast DailyForecast { get; set; }
 
         public HourlyData HourlyData { get; set; }
+
+        public bool HasMLPredictions { get; set; }
 
         public TimeSeriesData()
         {

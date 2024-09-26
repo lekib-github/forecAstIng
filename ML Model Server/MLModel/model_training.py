@@ -1,7 +1,7 @@
 ﻿from sklearn.model_selection import train_test_split
 from sklearn.neural_network import MLPRegressor
 
-from DataModel.data_processing import data_preprocess_pipeline, prepare_json_text_from_aray_prediction, extract_cyclical_time_features
+from DataModel.data_processing import data_preprocess_pipeline, prepare_json_from_prediction_aray, extract_cyclical_time_features
 from Services.weather_data_service import pull_data_via_client, open_meteo_client
 
 from datetime import timedelta
@@ -9,7 +9,7 @@ import numpy as np
 
 # How many hours we are using for prediction, and how many hours we are predicting
 HOURS_IN_INPUT = 24
-HOURS_IN_OUTPUT = 48
+HOURS_IN_OUTPUT = 120
 
 
 def train_MLPRegressor(df):
@@ -43,7 +43,7 @@ def get_requested_forecast(model, ct_in, ct_out, lat, lon, start_date):
 
     output = model.predict(np.concatenate(df_in).reshape(1, -1))
 
-    return prepare_json_text_from_aray_prediction(output, ct_out, start_date)
+    return prepare_json_from_prediction_aray(output, ct_out, start_date)
 
 
 # Some manual experimenting with different number of hours in/out and size of hidden layer(s)

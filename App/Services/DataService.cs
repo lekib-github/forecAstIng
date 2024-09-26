@@ -63,19 +63,20 @@ namespace forecAstIng.Services
         {
             var response = await client.GetAsync($"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation_probability,precipitation,weather_code,visibility,wind_speed_10m,wind_direction_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,daylight_duration,uv_index_max,precipitation_sum,precipitation_hours,precipitation_probability_max&temperature_unit={UNIT}&timezone=auto&past_days={TimeSeriesData.DAYS_OF_HISTORY}&forecast_days={TimeSeriesData.DAYS_OF_HISTORY}");
             var date = DateTime.UtcNow;
-            var response_ml_model = await client.GetAsync($"http://localhost/forecast?lat={lat}&lon={lon}&date={date.Year}-{date.Month:D2}-{date.Day:D2}");
+            var response_ml_model = await client.GetAsync($"https://branko-lekic02-d1bb0f5a-e682-4dba-bd68-9597c19a314f.socketxp.com/forecast?lat={lat}&lon={lon}&date={date.Year}-{date.Month:D2}-{date.Day:D2}");
             
-            if (response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode && response_ml_model.IsSuccessStatusCode)
             {
                 WeatherData weather;
                 weather = await response.Content.ReadFromJsonAsync<WeatherData>();
                 Hourly prediction;
                 prediction = await response_ml_model.Content.ReadFromJsonAsync<Hourly>();
+                weather.hourly_ml_model_predictions = prediction;
 
                 return weather;
             }
 
-            throw new ServiceException($"Bad Server response: {response.StatusCode}. Please check your internet connection and try again.");
+            throw new ServiceException($"Bad Server response (Weather API, ML Model): {response.StatusCode}, {response_ml_model.StatusCode}. Please check your internet connection and try again.");
         }
 
         public async Task<SymbolMatches> GetSymbolsFromName(string name)

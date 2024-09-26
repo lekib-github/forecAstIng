@@ -39,7 +39,8 @@
             set
             {
                 _hourly_ml_model_predictions = value;
-                _hourly.local_hours_today = DateTime.UtcNow.Hour + (int)Math.Floor((double)utc_offset_seconds / 3600);
+                _hourly_ml_model_predictions.context_current_day -= DAYS_OF_HISTORY;
+                _hourly_ml_model_predictions.local_hours_today = DateTime.UtcNow.Hour + (int)Math.Floor((double)utc_offset_seconds / 3600);
             }
         }
         public DailyUnits daily_units { get; set; }
@@ -79,10 +80,14 @@
         {
             daily.context_current_day -= daily.time_current.Subtract(newDate).Days;
             hourly.context_current_day = daily.context_current_day;
+            hourly_ml_model_predictions.context_current_day = daily.context_current_day;
 
             hourly_units = _hourly_units;
             hourly = _hourly;
+            hourly_ml_model_predictions = _hourly_ml_model_predictions;
             daily = _daily;
+
+            HasMLPredictions = hourly_ml_model_predictions.context_current_day >= 0;
         }
 
         public void RestoreCurrentDayData() => RefreshBaseDataForDate(DateTime.UtcNow);

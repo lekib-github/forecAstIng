@@ -56,7 +56,7 @@ def data_preprocess_pipeline(data, hours_in_input, hours_in_output):
     return inputs, targets, scaler_in, scaler_out
 
 
-def prepare_json_text_from_aray_prediction(prediction_arr, ct_out, start_date):
+def prepare_json_from_prediction_aray(prediction_arr, ct_out, start_date):
     prediction_arr = ct_out.named_transformers_["std scaler"].inverse_transform(prediction_arr.reshape(MLModel.model_training.HOURS_IN_OUTPUT, 5))
 
     df = pd.DataFrame({'temperature_2m': prediction_arr[:, 0], 'relative_humidity_2m': prediction_arr[:, 1],

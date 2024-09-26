@@ -64,33 +64,86 @@
                     CornerRadius="10"
                     HorizontalOptions="Center"
                     VerticalOptions="Center"
-                    HeightRequest="150"
+                    
                     WidthRequest="360">
                     <CollectionView 
                     ItemsLayout="HorizontalList"
                     ItemsSource="{Binding HourlyData}">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="model:HourlyData">
-                                <StackLayout
-                                Margin="15,0,15,0">
-                                    <Label 
-                                    HorizontalOptions="Center"
-                                    Text="{Binding time.Hour}"/>
-                                    <Image
-                                    HorizontalOptions="Center"
-                                    Source="{Binding current_behaviour, StringFormat='{0}.png'}"/>
-                                    <Label
-                                    HorizontalOptions="Center">
-                                        <Label.Text>
-                                            <MultiBinding StringFormat="{}{0}{1}">
-                                                <Binding Path="hour_value"/>
-                                                <Binding Path="measurement_unit"/>
-                                            </MultiBinding>
-                                        </Label.Text>
-                                    </Label>
-                                </StackLayout>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
+                        <CollectionView.Triggers>
+                            <DataTrigger TargetType="CollectionView" Binding="{Binding HasMLPredictions}" Value="false">
+                                <Setter Property="ItemTemplate">
+                                    <Setter.Value>
+                                        <DataTemplate x:DataType="model:HourlyData">
+                                            <StackLayout
+                                                Margin="15,0,15,0">
+                                                <Label 
+                                                    HorizontalOptions="Center"
+                                                    Text="{Binding time.Hour}"/>
+                                                <Image
+                                                    HorizontalOptions="Center"
+                                                    Source="{Binding current_behaviour, StringFormat='{0}.png'}"/>
+                                                <Label
+                                                    HorizontalOptions="Center">
+                                                    <Label.Text>
+                                                        <MultiBinding StringFormat="{}{0}{1}">
+                                                            <Binding Path="hour_value"/>
+                                                            <Binding Path="measurement_unit"/>
+                                                        </MultiBinding>
+                                                    </Label.Text>
+                                                </Label>
+                                            </StackLayout>
+                                        </DataTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                            <DataTrigger TargetType="CollectionView" Binding="{Binding HasMLPredictions}" Value="true">
+                                <Setter Property="ItemTemplate">
+                                    <Setter.Value>
+                                        <DataTemplate x:DataType="model:HourlyData">
+                                            <StackLayout
+                                                Margin="15,0,15,0">
+                                                <Label 
+                                                    HorizontalOptions="Center"
+                                                    Text="{Binding time.Hour}"/>
+                                                <Image
+                                                    HorizontalOptions="Center"
+                                                    Source="{Binding current_behaviour, StringFormat='{0}.png'}"/>
+                                                <Label
+                                                    HorizontalOptions="Center"
+                                                    Margin="0,0,0,15">
+                                                    <Label.Text>
+                                                        <MultiBinding StringFormat="{}{0}{1}">
+                                                            <Binding Path="hour_value"/>
+                                                            <Binding Path="measurement_unit"/>
+                                                        </MultiBinding>
+                                                    </Label.Text>
+                                                </Label>
+                                                <Label HorizontalOptions="Center" Text="ML Predictions:"/>
+                                                <Label HorizontalOptions="Center">
+                                                    <Label.Text>
+                                                        <MultiBinding StringFormat="Temperature: {0:f2}{1}">
+                                                            <Binding Path="ml_pred_temperature_2m_hour_value"/>
+                                                            <Binding Path="measurement_unit"/>
+                                                        </MultiBinding>
+                                                    </Label.Text>
+                                                </Label>
+                                                <Label HorizontalOptions="Center">
+                                                    <Label.Text>
+                                                        <MultiBinding StringFormat="Apparent Temp: {0:f2}{1}">
+                                                            <Binding Path="ml_pred_apparent_temperature_hour_value"/>
+                                                            <Binding Path="measurement_unit"/>
+                                                        </MultiBinding>
+                                                    </Label.Text>
+                                                </Label>
+                                                <Label HorizontalOptions="Center" Text="{Binding ml_pred_precipitation_hour_value, StringFormat='Precipitation: {0:f2}mm'}"/>
+                                                <Label HorizontalOptions="Center" Text="{Binding ml_pred_wind_speed_10m_hour_value, StringFormat='Wind Speed: {0:f2}km/h'}"/>
+                                                <Label HorizontalOptions="Center" Text="{Binding ml_pred_relative_humidity_hour_value, StringFormat='Relative Humidty: {0:f2}%'}"/>
+                                            </StackLayout>
+                                        </DataTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                        </CollectionView.Triggers>
                     </CollectionView>
                 </Frame>
                 <Label

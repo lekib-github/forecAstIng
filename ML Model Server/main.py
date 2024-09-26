@@ -51,8 +51,8 @@ if __name__ == '__main__':
         # Serialize the model.
         with lzma.open(MODEL_PATH, "wb") as model_file:
             pickle.dump((model, ct_in, ct_out), model_file)
-    else:
-        with lzma.open(MODEL_PATH, "rb") as model_file:
-            (model, ct_in, ct_out) = pickle.load(model_file)
+
+    with lzma.open(MODEL_PATH, "rb") as model_file:
+        (model, ct_in, ct_out) = pickle.load(model_file)
 
     server.run(debug=True, host='0.0.0.0', port=80)
